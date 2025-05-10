@@ -53,7 +53,7 @@ foreach ($app in $appList) {
 $networkLines = ipconfig /all | Select-String "IPv4|DNS|Default Gateway"
 $network = ""
 foreach ($line in $networkLines) {
-    if ($line.Line -match '\d+\.\d+\.\d+\.\d+|\S+\.\S+') {
+    if ($line.Line -match ":\s*[^\s]") {
         $network += "🌐 $($line.Line)`n"
     }
 }
